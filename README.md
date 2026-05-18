@@ -1,0 +1,1 @@
+This repository contains three NativeScript apps built with [Angular](ns-angular), [Solid](ns-solid), and [Vue](ns-vue). They take on an Apple Music inspired theme and utilize Vite 8 HMR together with [SimDeck](https://simdeck.nativescript.org/guide/quick-start) for agentic workflows.

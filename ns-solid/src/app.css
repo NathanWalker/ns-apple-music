@@ -1,0 +1,76 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Adaptive page background */
+.ns-light Page {
+  background-color: #ffffff;
+}
+.ns-dark Page {
+  background-color: #000000;
+}
+
+/* Adaptive default text colors /
+.ns-light Button,
+.ns-light TextField,
+.ns-light TextView {
+  color: #000000;
+}
+.ns-dark Label,
+.ns-dark Button,
+.ns-dark TextField,
+.ns-dark TextView {
+  color: #ffffff;
+}
+
+/* Helpers */
+.app-fg {
+  color: #000000;
+}
+.ns-dark .app-fg {
+  color: #ffffff;
+}
+.app-fg-muted {
+  color: #6b7280; /* matches iOS secondaryLabel-ish */
+}
+.ns-dark .app-fg-muted {
+  color: #98989f;
+}
+
+/* Surface for "card" backgrounds (search field, button pills) */
+.app-surface {
+  background-color: #f2f2f7; /* iOS systemGray6 light */
+}
+.ns-dark .app-surface {
+  background-color: #1c1c1e; /* iOS systemGray6 dark */
+}
+
+/* Always-white text (e.g., on top of hero images / accent backgrounds) */
+.on-image {
+  color: #ffffff;
+}
+
+/* Adaptive icon tint (SF Symbols via sys://) */
+.icon-fg {
+  tint-color: #000000;
+}
+.ns-dark .icon-fg {
+  tint-color: #ffffff;
+}
+.icon-muted {
+  tint-color: #8e8e93;
+}
+.icon-accent {
+  tint-color: #ff375f;
+}
+
+ActionBar {
+  background-color: transparent;
+}
+
+TabView {
+  font-family: -apple-system, "Helvetica Neue", "SF Pro Text", system-ui, sans-serif;
+}
+Label, Button, TextField, TextView {
+  font-family: -apple-system, "Helvetica Neue", "SF Pro Text", system-ui, sans-serif;
+}
