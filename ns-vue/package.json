@@ -4,18 +4,19 @@
   "version": "1.0.0",
   "private": true,
   "dependencies": {
+    "@nativescript/angular": "^21.0.0",
     "@nativescript/core": "9.1.0-alpha.6",
-    "@nativescript/simdeck-inspector": "^0.1.0",
+    "@nativescript/simdeck-inspector": "^0.1.3",
     "@nstudio/nativescript-menu": "^1.0.5",
     "@triniwiz/nativescript-image-cache-it": "^8.0.1",
     "@valor/nativescript-websockets": "^2.0.3",
     "nativescript-vue": "^3.0.0"
   },
   "devDependencies": {
-    "@nativescript/ios": "9.1.0-dev.10",
+    "@nativescript/ios": "9.1.0-alpha.1",
     "@nativescript/tailwind": "^4.0.0",
     "@nativescript/types": "~9.0.0",
-    "@nativescript/vite": "^8.0.0-alpha.17",
+    "@nativescript/vite": "8.0.0-alpha.20",
     "@nativescript/webpack": "~5.0.31",
     "@types/node": "^20.0.0",
     "concurrently": "^9.2.1",
@@ -34,7 +35,7 @@
     "dev:android": "concurrently -k -n vite,ns \"npm run dev:server:android\" \"wait-on tcp:5173 && npm run android\"",
     "dev:server:ios": "vite serve -- --env.ios --env.hmr",
     "dev:server:android": "vite serve -- --env.android --env.hmr",
-    "ios": "ns debug ios",
+    "ios": "ns run ios",
     "android": "ns debug android"
   }
 }

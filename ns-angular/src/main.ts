@@ -16,7 +16,9 @@ import { AppComponent } from './app/app.component';
 
 registerElement('ImageCacheIt', () => ImageCacheIt);
 
-startSimDeckInspector({ port: 4310 });
+if (__DEV__) {
+  startSimDeckInspector({ port: 4310 });
+}
 
 runNativeScriptAngularApp({
   appModuleBootstrap: () => {
