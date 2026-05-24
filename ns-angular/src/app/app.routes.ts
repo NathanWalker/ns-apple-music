@@ -1,8 +1,16 @@
 import { Routes } from '@angular/router';
-import { HomeComponent } from './components/home.component';
-import { AlbumDetailComponent } from './screens/album-detail.component';
 
 export const routes: Routes = [
-  { path: '', component: HomeComponent },
-  { path: 'album/:id', component: AlbumDetailComponent },
+  {
+    path: '',
+    loadChildren: () =>
+      import('./components/home.routes').then((m) => m.homeRoutes),
+  },
+  {
+    path: 'album/:id',
+    loadComponent: () =>
+      import('./screens/album-detail.component').then(
+        (m) => m.AlbumDetailComponent
+      ),
+  },
 ];

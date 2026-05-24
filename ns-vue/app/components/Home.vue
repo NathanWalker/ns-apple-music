@@ -46,8 +46,6 @@ import NowPlayingBar from './NowPlayingBar.vue';
 
 function onTabViewLoaded(args: any) {
   const tabView: any = args.object;
-  if (tabView.__bottomAccessoryMounted) return;
-  tabView.__bottomAccessoryMounted = true;
 
   const barView = createNativeView(NowPlayingBar);
   barView.mount();

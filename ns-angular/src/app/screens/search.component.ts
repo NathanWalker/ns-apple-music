@@ -5,34 +5,47 @@ import {
   computed,
   inject,
   signal,
-} from '@angular/core';
-import { NativeDialog, NativeScriptCommonModule, RouterExtensions } from '@nativescript/angular';
-import { albums, searchCategories, type Album, type Track } from '../music';
-import { fg, muted } from '../appearance';
-import { player } from '../player';
-import { chunks } from '../chunks';
-import { albumArtTag, openAlbum } from '../album-navigation';
-import { openNowPlaying } from './now-playing.component';
+} from "@angular/core";
+import {
+  NativeDialog,
+  NativeScriptCommonModule,
+  RouterExtensions,
+} from "@nativescript/angular";
+import { albums, searchCategories, type Album, type Track } from "../music";
+import { fg, muted } from "../appearance";
+import { player } from "../player";
+import { chunks } from "../chunks";
+import { albumArtTag, openAlbum } from "../album-navigation";
+import { openNowPlaying } from "./now-playing.component";
 
-const SEARCH_SECTION = 'search-results';
+const SEARCH_SECTION = "search-results";
 const ALBUM_ROW_HEIGHT = 72;
 
 type Category = (typeof searchCategories)[number];
-type CategoryRow = { kind: 'categoryRow'; pair: [Category, Category | undefined] };
-type SectionHeader = { kind: 'header'; label: string };
-type AlbumResult = { kind: 'album'; album: Album };
+type CategoryRow = {
+  kind: "categoryRow";
+  pair: [Category, Category | undefined];
+};
+type SectionHeader = { kind: "header"; label: string };
+type AlbumResult = { kind: "album"; album: Album };
 type TrackResult = {
-  kind: 'track';
+  kind: "track";
   album: Album;
   track: Track;
   trackIndex: number;
 };
-type EmptyResult = { kind: 'empty'; query: string };
-type SearchItem = CategoryRow | SectionHeader | AlbumResult | TrackResult | EmptyResult;
+type EmptyResult = { kind: "empty"; query: string };
+type SearchItem =
+  | CategoryRow
+  | SectionHeader
+  | AlbumResult
+  | TrackResult
+  | EmptyResult;
 
 @Component({
-  selector: 'ns-search',
+  selector: "ns-search",
   template: `
+    <ActionBar title="Search" iosLargeTitle="true"></ActionBar>
     <ListView
       [items]="items()"
       showSearch="true"
@@ -44,7 +57,7 @@ type SearchItem = CategoryRow | SectionHeader | AlbumResult | TrackResult | Empt
       <ng-template let-item="item">
         <GridLayout>
           <!-- categoryRow -->
-          @if (item.kind === 'categoryRow') {
+          @if (item.kind === "categoryRow") {
             <GridLayout columns="*, *" rows="*" height="104" class="px-5 pb-3">
               <GridLayout
                 col="0"
@@ -81,7 +94,7 @@ type SearchItem = CategoryRow | SectionHeader | AlbumResult | TrackResult | Empt
             </GridLayout>
           }
           <!-- header -->
-          @if (item.kind === 'header') {
+          @if (item.kind === "header") {
             <GridLayout height="44" verticalAlignment="bottom">
               <Label
                 [text]="item.label"
@@ -92,7 +105,7 @@ type SearchItem = CategoryRow | SectionHeader | AlbumResult | TrackResult | Empt
             </GridLayout>
           }
           <!-- album result -->
-          @if (item.kind === 'album') {
+          @if (item.kind === "album") {
             <GridLayout
               columns="64, *, auto"
               rows="*"
@@ -137,7 +150,7 @@ type SearchItem = CategoryRow | SectionHeader | AlbumResult | TrackResult | Empt
             </GridLayout>
           }
           <!-- track result -->
-          @if (item.kind === 'track') {
+          @if (item.kind === "track") {
             <GridLayout
               columns="64, *, auto"
               rows="*"
@@ -180,7 +193,7 @@ type SearchItem = CategoryRow | SectionHeader | AlbumResult | TrackResult | Empt
             </GridLayout>
           }
           <!-- empty -->
-          @if (item.kind === 'empty') {
+          @if (item.kind === "empty") {
             <GridLayout height="120" verticalAlignment="center">
               <Label
                 [text]="'No results for &quot;' + item.query + '&quot;'"
@@ -202,7 +215,7 @@ type SearchItem = CategoryRow | SectionHeader | AlbumResult | TrackResult | Empt
 export class SearchComponent {
   private routerExt = inject(RouterExtensions);
   private dialog = inject(NativeDialog);
-  query = signal('');
+  query = signal("");
   fg = fg;
   muted = muted;
 
@@ -216,43 +229,44 @@ export class SearchComponent {
       return chunks(searchCategories, 2).map(
         (pair) =>
           ({
-            kind: 'categoryRow',
+            kind: "categoryRow",
             pair: [pair[0], pair[1]] as [Category, Category | undefined],
-          }) as SearchItem
+          }) as SearchItem,
       );
     }
 
     const matchedAlbums = albums.filter(
-      (a) => a.title.toLowerCase().includes(q) || a.artist.toLowerCase().includes(q)
+      (a) =>
+        a.title.toLowerCase().includes(q) || a.artist.toLowerCase().includes(q),
     );
     const matchedTracks: TrackResult[] = [];
     for (const album of albums) {
       album.tracks.forEach((track, i) => {
         if (track.title.toLowerCase().includes(q)) {
-          matchedTracks.push({ kind: 'track', album, track, trackIndex: i });
+          matchedTracks.push({ kind: "track", album, track, trackIndex: i });
         }
       });
     }
 
     const result: SearchItem[] = [];
     if (matchedAlbums.length) {
-      result.push({ kind: 'header', label: 'Albums' });
+      result.push({ kind: "header", label: "Albums" });
       for (const album of matchedAlbums) {
-        result.push({ kind: 'album', album });
+        result.push({ kind: "album", album });
       }
     }
     if (matchedTracks.length) {
-      result.push({ kind: 'header', label: 'Songs' });
+      result.push({ kind: "header", label: "Songs" });
       result.push(...matchedTracks);
     }
     if (!result.length) {
-      result.push({ kind: 'empty', query: this.query().trim() });
+      result.push({ kind: "empty", query: this.query().trim() });
     }
     return result;
   });
 
   onSearchChange(args: any) {
-    this.query.set(args?.data?.text ?? args?.text ?? args?.object?.text ?? '');
+    this.query.set(args?.data?.text ?? args?.text ?? args?.object?.text ?? "");
   }
 
   openAlbumItem(album: Album) {

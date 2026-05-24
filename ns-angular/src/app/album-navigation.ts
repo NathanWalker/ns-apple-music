@@ -22,11 +22,32 @@ function buildSharedTransition(sourceTag: string) {
   });
 }
 
+// Named outlets cleared during album navigation. The TabView declares its
+// tabs as named outlets (listenNowTab, browseTab, …) which Angular Router
+// keeps in the URL alongside the primary outlet. A plain ['/album', id]
+// navigation tries to set the primary outlet AND keep the named outlets,
+// which Angular rejects as "Two segments cannot have the same outlet name"
+// (NG04006). Listing them as null in the same command lets the primary
+// outlet receive the album route.
+const TAB_OUTLET_RESET = {
+  listenNowTab: null,
+  browseTab: null,
+  radioTab: null,
+  libraryTab: null,
+  searchTab: null,
+} as const;
+
 export function openAlbum(routerExtensions: RouterExtensions, album: Album, section: string) {
   player.playAlbum(album);
   const sourceTag = albumArtTag(section, album);
-  routerExtensions.navigate(['/album', album.id], {
-    queryParams: { sourceTag },
-    transition: buildSharedTransition(sourceTag) as any,
-  } as any);
+  routerExtensions.navigate(
+    [
+      '/',
+      { outlets: { primary: ['album', album.id], ...TAB_OUTLET_RESET } },
+    ],
+    {
+      queryParams: { sourceTag },
+      transition: buildSharedTransition(sourceTag) as any,
+    } as any,
+  );
 }
