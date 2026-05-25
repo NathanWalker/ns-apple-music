@@ -20,7 +20,13 @@ function buildSharedTransition(sourceTag: string) {
       spring: { tension: 60, friction: 8, mass: 1 },
       sharedTransitionTags: tags,
     },
-    interactive: { dismiss: { finishThreshold: 0.5, morph: true } },
+    interactive: {
+      dismiss: {
+        finishThreshold: 0.5,
+        morph: true,
+        shadow: { opacity: 0.45, radius: 32, offset: { x: 0, y: 12 } },
+      },
+    },
   })
 }
 

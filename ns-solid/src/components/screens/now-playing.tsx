@@ -270,6 +270,7 @@ export function openNowPlaying() {
       interactive: {
         dismiss: {
           finishThreshold: 0.5,
+          shadow: { opacity: 0.35, radius: 28, offset: { x: 0, y: 10 } },
         },
       },
     }) as any,

@@ -12,7 +12,12 @@ export function openNowPlaying() {
         spring: { tension: 65, friction: 11, mass: 1 },
       },
       pageReturn: { cornerRadius: Device.deviceType === 'Phone' ? 26 : 12 },
-      interactive: { dismiss: { finishThreshold: 0.5 } },
+      interactive: {
+        dismiss: {
+          finishThreshold: 0.5,
+          shadow: { opacity: 0.35, radius: 28, offset: { x: 0, y: 10 } },
+        },
+      },
     }) as any,
   } as any);
 }

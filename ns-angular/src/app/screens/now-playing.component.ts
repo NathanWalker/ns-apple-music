@@ -276,7 +276,12 @@ export function openNowPlaying(dialog: NativeDialog) {
           spring: { tension: 65, friction: 11, mass: 1 },
         },
         pageReturn: { cornerRadius: 26 },
-        interactive: { dismiss: { finishThreshold: 0.5 } },
+        interactive: {
+          dismiss: {
+            finishThreshold: 0.5,
+            shadow: { opacity: 0.35, radius: 28, offset: { x: 0, y: 10 } },
+          },
+        },
       }) as any,
     },
   };

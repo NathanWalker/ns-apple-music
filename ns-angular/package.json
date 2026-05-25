@@ -37,7 +37,7 @@
   },
   "overrides": {
     "@nativescript/angular": "21.0.1-alpha.9",
-    "@nativescript/core": "9.1.0-alpha.7",
+    "@nativescript/core": "9.1.0-alpha.8",
     "vite": "^8.0.0"
   },
   "scripts": {
