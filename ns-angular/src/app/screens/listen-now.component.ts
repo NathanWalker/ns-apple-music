@@ -51,19 +51,16 @@ const MADE_FOR_YOU = "listen-now-made-for-you";
             >
               <Label
                 text="FEATURED ALBUM"
-                class="text-xs font-bold"
-                color="#ffffff"
+                class="text-xs font-bold text-white"
                 opacity="0.85"
               ></Label>
               <Label
                 [text]="topPicks[0].title"
-                class="text-3xl font-bold"
-                color="#ffffff"
+                class="text-3xl font-bold text-white"
               ></Label>
               <Label
                 [text]="topPicks[0].artist"
-                class="text-base"
-                color="#ffffff"
+                class="text-base text-white"
                 opacity="0.85"
               ></Label>
             </StackLayout>

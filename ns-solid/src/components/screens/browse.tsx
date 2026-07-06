@@ -29,9 +29,9 @@ export default function Browse() {
             <gridlayout rows="*" columns="*" borderRadius="14" class="overflow-hidden" on:tap={() => openAlbum(router, hero, HERO)}>
               <imagecacheit src={hero.artwork} stretch="aspectFill" height="320" borderRadius="14" sharedTransitionTag={albumArtTag(HERO, hero)} />
               <stacklayout verticalAlignment="bottom" class="p-4">
-                <label text="NEW RELEASE" class="text-xs font-bold" color="#ffffff" opacity="0.85" />
-                <label text={hero.title} class="text-3xl font-bold" color="#ffffff" />
-                <label text={hero.artist} class="text-base" color="#ffffff" opacity="0.85" />
+                <label text="NEW RELEASE" class="text-xs font-bold text-white" opacity="0.85" />
+                <label text={hero.title} class="text-3xl font-bold text-white" />
+                <label text={hero.artist} class="text-base text-white" opacity="0.85" />
               </stacklayout>
             </gridlayout>
           </stacklayout>

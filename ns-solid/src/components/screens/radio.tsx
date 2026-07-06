@@ -33,13 +33,11 @@ export default function Radio() {
                 <label text="LIVE" class="text-xs font-bold" color="#ff375f" />
                 <label
                   text={radioStations[0].title}
-                  class="text-2xl font-bold"
-                  color="#ffffff"
+                  class="text-2xl font-bold text-white"
                 />
                 <label
                   text={radioStations[0].subtitle}
-                  class="text-sm"
-                  color="#ffffff"
+                  class="text-sm text-white"
                   opacity="0.85"
                 />
               </stacklayout>

@@ -110,8 +110,7 @@ export default function Search() {
           >
             <label
               text={item.pair[0].label}
-              class="text-lg font-bold p-3"
-              color="#ffffff"
+              class="text-lg font-bold p-3 text-white"
               verticalAlignment="top"
             />
           </gridlayout>
@@ -126,8 +125,7 @@ export default function Search() {
             >
               <label
                 text={item.pair[1]!.label}
-                class="text-lg font-bold p-3"
-                color="#ffffff"
+                class="text-lg font-bold p-3 text-white"
                 verticalAlignment="top"
               />
             </gridlayout>

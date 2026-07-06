@@ -45,19 +45,16 @@ const HOT_TRACKS = "browse-hot-tracks";
             <StackLayout verticalAlignment="bottom" class="p-4">
               <Label
                 text="NEW RELEASE"
-                class="text-xs font-bold"
-                color="#ffffff"
+                class="text-xs font-bold text-white"
                 opacity="0.85"
               ></Label>
               <Label
                 [text]="hero.title"
-                class="text-3xl font-bold"
-                color="#ffffff"
+                class="text-3xl font-bold text-white"
               ></Label>
               <Label
                 [text]="hero.artist"
-                class="text-base"
-                color="#ffffff"
+                class="text-base text-white"
                 opacity="0.85"
               ></Label>
             </StackLayout>

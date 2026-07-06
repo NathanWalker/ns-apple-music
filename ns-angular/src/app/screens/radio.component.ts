@@ -39,13 +39,11 @@ import { fg, muted } from "../appearance";
               ></Label>
               <Label
                 [text]="radioStations[0].title"
-                class="text-2xl font-bold"
-                color="#ffffff"
+                class="text-2xl font-bold text-white"
               ></Label>
               <Label
                 [text]="radioStations[0].subtitle"
-                class="text-sm"
-                color="#ffffff"
+                class="text-sm text-white"
                 opacity="0.85"
               ></Label>
             </StackLayout>
