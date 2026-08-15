@@ -1,7 +1,7 @@
-import { createMemo, createSignal, For, Show } from 'solid-js'
+import { createMemo, createSignal, isPending, For, Loading, Show } from 'solid-js'
 import { useRouter } from 'solid-navigation'
 import {
-  albums,
+  searchCatalog,
   searchCategories,
   type Album,
   type Track,
@@ -43,48 +43,48 @@ export default function Search() {
   const { fg, muted } = useAppearance()
   const [query, setQuery] = createSignal('')
 
-  const items = createMemo<SearchItem[]>(() => {
-    const q = query().trim().toLowerCase()
-    if (!q) {
-      return chunks(searchCategories, 2).map(
-        (pair) =>
-          ({
-            kind: 'categoryRow',
-            pair: [pair[0], pair[1]] as [Category, Category | undefined],
-          }) as SearchItem,
-      )
-    }
-
-    const matchedAlbums = albums.filter(
-      (a) =>
-        a.title.toLowerCase().includes(q) ||
-        a.artist.toLowerCase().includes(q),
+  const browseItems = (): SearchItem[] =>
+    chunks(searchCategories, 2).map(
+      (pair) =>
+        ({
+          kind: 'categoryRow',
+          pair: [pair[0], pair[1]] as [Category, Category | undefined],
+        }) as SearchItem,
     )
-    const matchedTracks: TrackResult[] = []
-    for (const album of albums) {
-      album.tracks.forEach((track, i) => {
-        if (track.title.toLowerCase().includes(q)) {
-          matchedTracks.push({ kind: 'track', album, track, trackIndex: i })
-        }
-      })
-    }
 
-    const result: SearchItem[] = []
-    if (matchedAlbums.length) {
-      result.push({ kind: 'header', label: 'Albums' })
-      for (const album of matchedAlbums) {
-        result.push({ kind: 'album', album })
+  // Returning a promise is all it takes to make this async — no createResource,
+  // no loading flag, no transition. The empty-query branch returns an array and
+  // reads immediately; the search branch suspends the read until it resolves.
+  const items = createMemo<SearchItem[]>(() => {
+    const q = query().trim()
+    if (!q) return browseItems()
+
+    return searchCatalog(q).then(({ albums, tracks }): SearchItem[] => {
+      const result: SearchItem[] = []
+      if (albums.length) {
+        result.push({ kind: 'header', label: 'Albums' })
+        for (const album of albums) result.push({ kind: 'album', album })
       }
-    }
-    if (matchedTracks.length) {
-      result.push({ kind: 'header', label: 'Songs' })
-      result.push(...matchedTracks)
-    }
-    if (!result.length) {
-      result.push({ kind: 'empty', query: query().trim() })
-    }
-    return result
+      if (tracks.length) {
+        result.push({ kind: 'header', label: 'Songs' })
+        for (const t of tracks) result.push({ kind: 'track', ...t })
+      }
+      if (!result.length) result.push({ kind: 'empty', query: q })
+      return result
+    })
   })
+
+  const statusRow = (text: string, height: number) => (
+    <gridlayout height={height} verticalAlignment="center">
+      <label
+        text={text}
+        class="text-base"
+        color={muted()}
+        horizontalAlignment="center"
+        verticalAlignment="center"
+      />
+    </gridlayout>
+  )
 
   const playTrack = (album: Album, trackIndex: number) => {
     player.playAlbum(album, trackIndex)
@@ -263,7 +263,15 @@ export default function Search() {
           setQuery(args?.data?.text ?? args?.text ?? '')
         }}
       >
-        <For each={items()}>{(item) => renderItem(item)}</For>
+        <Loading fallback={statusRow('Searching…', EMPTY_ROW_HEIGHT)}>
+          {/* Stays true while a *new* query is in flight, with the previous
+              results still on screen — the boundary only falls back when there
+              is nothing rendered yet. */}
+          <Show when={isPending(() => items())}>
+            {statusRow('Updating…', HEADER_HEIGHT)}
+          </Show>
+          <For each={items()}>{(item) => renderItem(item)}</For>
+        </Loading>
       </listview>
     </page>
   )

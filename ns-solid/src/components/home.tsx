@@ -1,4 +1,4 @@
-import { onMount } from 'solid-js'
+import { onSettled } from 'solid-js'
 import type { TabView } from '@nativescript/core'
 import ListenNow from './screens/listen-now'
 import Browse from './screens/browse'
@@ -16,7 +16,7 @@ export default function Home() {
     </gridlayout>
   )
 
-  onMount(() => {
+  onSettled(() => {
     if (tabViewRef) {
       ;(tabViewRef as any).iosBottomAccessory = accessoryView
       ;(tabViewRef as any).iosTabBarMinimizeBehavior = 'onScrollDown'

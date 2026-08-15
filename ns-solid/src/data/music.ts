@@ -242,6 +242,34 @@ export const albums: Album[] = [
 export const albumById = (id: string): Album =>
   albums.find((a) => a.id === id) ?? albums[0]
 
+export type CatalogMatch = {
+  albums: Album[]
+  tracks: { album: Album; track: Track; trackIndex: number }[]
+}
+
+/** Stands in for a catalog endpoint so search has real latency to render around. */
+export const searchCatalog = async (query: string): Promise<CatalogMatch> => {
+  await new Promise((resolve) => setTimeout(resolve, 700))
+
+  const q = query.toLowerCase()
+  const tracks: CatalogMatch['tracks'] = []
+  for (const album of albums) {
+    album.tracks.forEach((track, trackIndex) => {
+      if (track.title.toLowerCase().includes(q)) {
+        tracks.push({ album, track, trackIndex })
+      }
+    })
+  }
+
+  return {
+    albums: albums.filter(
+      (a) =>
+        a.title.toLowerCase().includes(q) || a.artist.toLowerCase().includes(q),
+    ),
+    tracks,
+  }
+}
+
 export const topPicks = ['midnight-main', 'midnight', 'neon', 'sunset', 'velvet', 'pulse'].map(albumById)
 export const newReleases = ['cinder', 'mosaic', 'prism', 'aurora', 'ember', 'horizon'].map(albumById)
 export const recentlyPlayed = ['echo', 'dream', 'lunar', 'retro', 'midnight', 'sunset'].map(albumById)
