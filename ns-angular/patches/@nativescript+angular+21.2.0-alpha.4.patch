@@ -1,0 +1,22 @@
+diff --git a/node_modules/@nativescript/angular/fesm2022/nativescript-angular.mjs b/node_modules/@nativescript/angular/fesm2022/nativescript-angular.mjs
+index d3977ac..09be29d 100644
+--- a/node_modules/@nativescript/angular/fesm2022/nativescript-angular.mjs
++++ b/node_modules/@nativescript/angular/fesm2022/nativescript-angular.mjs
+@@ -4,7 +4,7 @@ import * as i0 from '@angular/core';
+ import { InjectionToken, Inject, ComponentRef, Injectable, Optional, PlatformRef, NgModuleRef, ApplicationRef, NgZone, inject, Injector, ViewEncapsulation, runInInjectionContext, ElementRef, Directive, EventEmitter, Output, NgModule, createComponent, ComponentFactoryResolver, ChangeDetectorRef, ViewContainerRef, ViewChild, NO_ERRORS_SCHEMA, Component, Input, IterableDiffers, TemplateRef, forwardRef, HostListener, ContentChild, ChangeDetectionStrategy, Host, ErrorHandler, SkipSelf, ɵINJECTOR_SCOPE as _INJECTOR_SCOPE, RendererFactory2, ApplicationModule, Sanitizer, PLATFORM_ID, createPlatformFactory, platformCore, ɵinternalCreateApplication as _internalCreateApplication, makeEnvironmentProviders, untracked, signal, computed, booleanAttribute, Renderer2, ContentChildren, reflectComponentType, EnvironmentInjector, HostAttributeToken, APP_BOOTSTRAP_LISTENER, provideEnvironmentInitializer, isDevMode, ɵinternalProvideZoneChangeDetection as _internalProvideZoneChangeDetection } from '@angular/core';
+ import { __decorate, __param, __metadata } from 'tslib';
+ import * as i1$2 from '@angular/common';
+-import { LocationStrategy, XhrFactory, CommonModule, ɵNullViewportScroller as _NullViewportScroller, ViewportScroller, PlatformLocation, DOCUMENT } from '@angular/common';
++import { LocationStrategy, XhrFactory, CommonModule, ɵNullViewportScroller as _NullViewportScroller, ViewportScroller, PlatformLocation, DOCUMENT, IMAGE_CONFIG } from '@angular/common';
+ import * as i1$3 from '@angular/router';
+ import { DefaultUrlSerializer, Router, UrlTree, ActivatedRoute, NavigationEnd, isActive, ChildrenOutletContexts, PRIMARY_OUTLET, NavigationCancel, NavigationError, NavigationStart, withComponentInputBinding, RouteReuseStrategy, RouterModule, provideRouter } from '@angular/router';
+ import { BehaviorSubject, Subject, ReplaySubject, fromEvent, defer, Observable as Observable$1, of, from, combineLatest } from 'rxjs';
+@@ -6003,7 +6003,7 @@ const NATIVESCRIPT_MODULE_STATIC_PROVIDERS = [
+     { provide: DEVICE, useValue: Device },
+     { provide: XhrFactory, useClass: NativescriptXhrFactory, deps: [] },
+ ];
+-const NATIVESCRIPT_MODULE_PROVIDERS = [{ provide: ViewportScroller, useClass: _NullViewportScroller }];
++const NATIVESCRIPT_MODULE_PROVIDERS = [{ provide: ViewportScroller, useClass: _NullViewportScroller }, { provide: IMAGE_CONFIG, useValue: { disableImageSizeWarning: true, disableImageLazyLoadWarning: true } }];
+ class NativeScriptModule {
+     constructor(parentModule) {
+         if (parentModule) {
