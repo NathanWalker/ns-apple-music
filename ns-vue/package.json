@@ -4,7 +4,7 @@
   "version": "1.0.0",
   "private": true,
   "dependencies": {
-    "@nativescript/core": "9.1.0-alpha.8",
+    "@nativescript/core": "9.1.0-next.2",
     "@nativescript/simdeck-inspector": "^0.1.3",
     "@nstudio/nativescript-menu": "^1.0.5",
     "@triniwiz/nativescript-image-cache-it": "^8.0.1",
@@ -12,19 +12,22 @@
     "nativescript-vue": "^3.0.0"
   },
   "devDependencies": {
-    "@nativescript/android": "9.0.4",
-    "@nativescript/ios": "9.1.0-alpha.14",
+    "@nativescript/android": "9.1.0-alpha.10",
+    "@nativescript/ios": "9.1.0-alpha.20",
     "@nativescript/tailwind": "^4.0.0",
     "@nativescript/types": "~9.0.0",
-    "@nativescript/vite": "8.0.0-alpha.60",
-    "@nativescript/webpack": "~5.0.31",
+    "@nativescript/vite": "8.0.0-alpha.73",
     "@types/node": "^20.0.0",
+    "@vitejs/plugin-vue": "^6.0.5",
+    "@vitejs/plugin-vue-jsx": "^5.1.5",
+    "@vue/compiler-sfc": "^3.5.0",
     "patch-package": "^8.0.1",
     "tailwindcss": "^4.0.0",
-    "typescript": "~5.8.0"
+    "typescript": "~6.0.0",
+    "vue-tsc": "^3.2.0"
   },
   "overrides": {
-    "@nativescript/core": "9.1.0-alpha.8",
+    "@nativescript/core": "9.1.0-next.2",
     "vite": "^8.0.0"
   },
   "scripts": {

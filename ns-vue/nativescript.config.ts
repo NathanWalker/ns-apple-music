@@ -12,5 +12,5 @@ export default {
     additionalPathsToClean: ['.ns-vite-build']
   },
   bundler: 'vite',
-  bundlerConfigPath: 'vite.config.ts'
+  bundlerConfigPath: 'vite.config.mts'
 } as NativeScriptConfig;
