@@ -1,0 +1,41 @@
+diff --git a/node_modules/@nativescript/tailwind/src/removeUnsupported.js b/node_modules/@nativescript/tailwind/src/removeUnsupported.js
+index f4027ee..362912f 100644
+--- a/node_modules/@nativescript/tailwind/src/removeUnsupported.js
++++ b/node_modules/@nativescript/tailwind/src/removeUnsupported.js
+@@ -287,6 +287,8 @@ const supportedProperties = {
+   "border-width": true,
+   "box-shadow": true,
+   "clip-path": true,
++  "column-gap": true,
++  direction: true,
+   color: true,
+   flex: true,
+   "flex-grow": true,
+@@ -318,6 +320,9 @@ const supportedProperties = {
+   "margin-inline": true,
+   "margin-inline-start": true,
+   "margin-inline-end": true,
++  "max-height": true,
++  "max-lines": true,
++  "max-width": true,
+   "min-height": true,
+   "min-width": true,
+   "off-background-color": true,
+@@ -343,9 +348,17 @@ const supportedProperties = {
+   "text-decoration": ["none", "line-through", "underline"],
+   "text-shadow": true,
+   "text-transform": ["none", "capitalize", "uppercase", "lowercase"],
++  "text-overflow": true,
++  "text-stroke": true,
+   "tint-color": true,
+   transform: true,
+   rotate: true,
++  rotatex: true,
++  rotatey: true,
++  perspective: true,
++  gap: true,
++  "row-gap": true,
++  "white-space": ["normal", "nowrap"],
+   "vertical-align": ["top", "center", "middle", "bottom", "stretch"],
+   visibility: ["visible", "collapse"],
+   width: true,
