@@ -25,7 +25,7 @@ index e17ece1..1696673 100644
      return useContext(RouteContext);
  }
 diff --git a/node_modules/solid-navigation/dist/src/route.jsx b/node_modules/solid-navigation/dist/src/route.jsx
-index ce2c277..64273ae 100644
+index ce2c277..e9f0c17 100644
 --- a/node_modules/solid-navigation/dist/src/route.jsx
 +++ b/node_modules/solid-navigation/dist/src/route.jsx
 @@ -1,4 +1,4 @@
@@ -34,16 +34,25 @@ index ce2c277..64273ae 100644
  import { useRouter, useRouterInternal } from "./context";
  export const Route = (props) => {
      const router = useRouter();
-@@ -9,16 +9,16 @@ export const Route = (props) => {
+@@ -9,16 +9,22 @@ export const Route = (props) => {
          routeOptions: props.routeOptions,
          pageProps: props.pageProps,
      };
 -    onMount(() => {
 +    onSettled(() => {
          routerInternal === null || routerInternal === void 0 ? void 0 : routerInternal.pushRoute(route);
-         if ((router === null || router === void 0 ? void 0 : router.initialRouteName) === props.name && !router.current()) {
-             router === null || router === void 0 ? void 0 : router.navigate(props.name, {
-                 params: props.initialParams,
+-        if ((router === null || router === void 0 ? void 0 : router.initialRouteName) === props.name && !router.current()) {
+-            router === null || router === void 0 ? void 0 : router.navigate(props.name, {
+-                params: props.initialParams,
++        if ((router === null || router === void 0 ? void 0 : router.initialRouteName) === props.name) {
++            // Navigating renders the page, and render() flushes — which Solid
++            // forbids inside onSettled — so the first navigation runs after it.
++            queueMicrotask(() => {
++                if (!router.current()) {
++                    router.navigate(props.name, {
++                        params: props.initialParams,
++                    });
++                }
              });
          }
 -    });
@@ -56,7 +65,7 @@ index ce2c277..64273ae 100644
      return null;
  };
 diff --git a/node_modules/solid-navigation/dist/src/stack-item.jsx b/node_modules/solid-navigation/dist/src/stack-item.jsx
-index b3b02b7..d2baf22 100644
+index b3b02b7..7aa705d 100644
 --- a/node_modules/solid-navigation/dist/src/stack-item.jsx
 +++ b/node_modules/solid-navigation/dist/src/stack-item.jsx
 @@ -1,12 +1,12 @@
@@ -78,8 +87,9 @@ index b3b02b7..d2baf22 100644
 +    </NavigationContext>);
  }
  //# sourceMappingURL=stack-item.jsx.map
+\ No newline at end of file
 diff --git a/node_modules/solid-navigation/dist/src/stack-router.jsx b/node_modules/solid-navigation/dist/src/stack-router.jsx
-index 07bb41e..0934bec 100644
+index 07bb41e..edc7b87 100644
 --- a/node_modules/solid-navigation/dist/src/stack-router.jsx
 +++ b/node_modules/solid-navigation/dist/src/stack-router.jsx
 @@ -1,7 +1,7 @@
@@ -91,7 +101,27 @@ index 07bb41e..0934bec 100644
  import { NavigationContext, NavigationContextInternal, useParams as useParamsDefault, useRoute as useRouteDefault, useRouter as userRouterDefault, } from "./context";
  import { Route as RouteInternal } from "./route";
  import { StackItem } from "./stack-item";
-@@ -54,18 +54,19 @@ export function createStackRouter(routes) {
+@@ -25,14 +25,16 @@ export function createStackRouter(routes) {
+             ? undefined
+             : Frame.topmost();
+         const parentContext = useRouter();
++        // Store writes are not readable until the next flush, so lookups go through
++        // this plain array: <Route> registers and navigates in the same tick.
++        const routeList = getRoutes(routes);
+         const [state, setState] = createStore({
+-            routes: getRoutes(routes),
++            routes: [...routeList],
+             stack: [],
+         });
+         const navigate = (routeName, options) => {
+             var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k;
+-            const routeIndex = state.routes.findIndex((route) => route.name === routeName);
+-            const route = state.routes[routeIndex];
++            const route = routeList.find((r) => r.name === routeName);
+             if (!route)
+                 //@ts-ignore
+                 return console.warn(`Trying to navigate to a route "${routeName}" that does not exist in the route map.`);
+@@ -54,18 +56,19 @@ export function createStackRouter(routes) {
                                  ((_d = route.routeOptions) === null || _d === void 0 ? void 0 : _d.noHeader) ||
                                  false;
                      }
@@ -117,23 +147,45 @@ index 07bb41e..0934bec 100644
                          });
                          page.off("disposeNativeView", disposeNativeView);
                      };
-@@ -108,26 +109,27 @@ export function createStackRouter(routes) {
+@@ -98,36 +101,45 @@ export function createStackRouter(routes) {
+                 frameRef = !props.useTopMostFrame ? frameRef : Frame.topmost();
+                 frameRef === null || frameRef === void 0 ? void 0 : frameRef.goBack();
+             },
+-            routes: state.routes,
+-            stack: state.stack,
++            get routes() {
++                return state.routes;
++            },
++            get stack() {
++                return state.stack;
++            },
+             current: () => state.stack[state.stack.length - 1],
+             initialRouteName: props.initialRouteName,
+             parent: () => parentContext,
+         };
+         const contextInternal = {
              pushRoute: (route) => {
-                 if (state.routes.findIndex((r) => r.name === route.name) > -1)
+-                if (state.routes.findIndex((r) => r.name === route.name) > -1)
++                if (routeList.findIndex((r) => r.name === route.name) > -1)
                      return;
 -                setState("routes", (routes) => [...routes, route]);
++                routeList.push(route);
 +                setState((s) => {
 +                    s.routes.push(route);
 +                });
              },
              removeRoute: (route) => {
-                 const index = state.routes.findIndex((r) => r.name === route.name);
+-                const index = state.routes.findIndex((r) => r.name === route.name);
++                const index = routeList.findIndex((r) => r.name === route.name);
                  if (index > -1) {
 -                    setState("routes", (routes) => {
 -                        const _routes = [...routes].splice(index, 1);
 -                        return _routes;
++                    routeList.splice(index, 1);
 +                    setState((s) => {
-+                        s.routes.splice(index, 1);
++                        const i = s.routes.findIndex((r) => r.name === route.name);
++                        if (i > -1)
++                            s.routes.splice(i, 1);
                      });
                  }
              },

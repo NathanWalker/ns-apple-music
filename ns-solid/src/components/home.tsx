@@ -1,4 +1,4 @@
-import { onSettled } from 'solid-js'
+import { onSettled, untrack } from 'solid-js'
 import type { TabView } from '@nativescript/core'
 import ListenNow from './screens/listen-now'
 import Browse from './screens/browse'
@@ -6,6 +6,7 @@ import Radio from './screens/radio'
 import Library from './screens/library'
 import Search from './screens/search'
 import NowPlayingBar from './now-playing-bar'
+import { ui } from '../state/ui'
 
 export default function Home() {
   let tabViewRef!: TabView
@@ -26,7 +27,13 @@ export default function Home() {
   return (
     <tabview
       ref={(el: any) => (tabViewRef = el)}
-      selectedIndex={0}
+      selectedIndex={ui.selectedTab()}
+      on:selectedIndexChanged={(args: any) => {
+        // Applying selectedIndex echoes this event synchronously while Home is
+        // still rendering, where Solid rejects signal writes even of equal values.
+        const index = args.object.selectedIndex
+        if (index !== untrack(ui.selectedTab)) ui.setSelectedTab(index)
+      }}
       tabTextFontSize="11"
       selectedTabTextColor="#FF375F"
     >

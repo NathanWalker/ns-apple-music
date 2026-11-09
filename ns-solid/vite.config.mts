@@ -10,15 +10,17 @@ const packageDir = (spec: string) => dirname(require.resolve(`${spec}/package.js
 
 // Solid 2's exports map resolves `node` to the SSR build, which renders once and
 // never updates. Every entry point is pinned to an explicit browser bundle so the
-// app and the renderer also share a single reactive core.
-const solidAliases = (prod: boolean) => ({
-  'solid-js': join(packageDir('solid-js'), 'dist', prod ? 'solid.js' : 'dev.js'),
-  '@solidjs/signals': join(packageDir('@solidjs/signals'), 'dist', prod ? 'prod/index.js' : 'dev.js'),
-  '@solidjs/universal': join(
-    dirname(require.resolve('@solidjs/universal')),
-    prod ? 'universal.js' : 'dev.js'
-  ),
-});
+// app and the renderer also share a single reactive core. Matches are anchored:
+// subpaths like `solid-js/internal` must fall through to the exports map.
+const solidAliases = (prod: boolean) => [
+  { find: /^solid-js$/, replacement: join(packageDir('solid-js'), 'dist', prod ? 'solid.js' : 'solid.dev.js') },
+  { find: /^@solidjs\/signals$/, replacement: join(packageDir('@solidjs/signals'), 'dist', prod ? 'prod/index.js' : 'dev.js') },
+  {
+    // @solidjs/universal does not export ./package.json; its default entry lives in dist/.
+    find: /^@solidjs\/universal$/,
+    replacement: join(dirname(require.resolve('@solidjs/universal')), prod ? 'universal.js' : 'universal.dev.js'),
+  },
+];
 
 export default defineConfig(({ mode }) => {
   const prod = mode !== 'development';
@@ -29,7 +31,7 @@ export default defineConfig(({ mode }) => {
       solid({
         dev: !prod,
         // NativeScript's dev-server runtime drives module replacement itself.
-        refresh: { disabled: true },
+        refresh: false,
         solid: {
           generate: 'universal',
           hydratable: false,

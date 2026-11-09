@@ -10,6 +10,7 @@ import {
 } from "@nativescript/core";
 import type { MenuAction } from "@nstudio/nativescript-menu";
 import { document } from "dominative";
+import { createSignal } from "solid-js";
 import { player } from "../../state/player";
 
 function darken(hex: string, amount = 0.35): string {
@@ -20,7 +21,25 @@ function darken(hex: string, amount = 0.35): string {
   return new Color(255, r, g, b).hex;
 }
 
+function durationSeconds(duration: string): number {
+  const [m, s] = duration.split(":").map(Number);
+  return (m || 0) * 60 + (s || 0);
+}
+
+function formatTime(totalSeconds: number): string {
+  const t = Math.max(0, Math.round(totalSeconds));
+  const m = Math.floor(t / 60);
+  const s = t % 60;
+  return m + ":" + (s < 10 ? "0" : "") + s;
+}
+
+// The whole surface is styled through the `np-*` classes in src/now-playing.css
+// so a stylesheet edit restyles the sheet while it stays presented. Only data
+// bindings (gradient, progress width, times) and `tintColor` — which does not
+// re-apply on a restyle — live inline.
 function NowPlaying(props: { close: () => void }) {
+  const [isStarred, setIsStarred] = createSignal(false);
+
   const ellipsisMenu: MenuAction[] = [
     {
       name: "",
@@ -59,179 +78,176 @@ function NowPlaying(props: { close: () => void }) {
 
   return (
     <gridlayout rows="*">
-      {/* Vibrant gradient backdrop based on the album accent */}
-      <gridlayout
-        backgroundColor={player.currentAlbum().accent}
-        backgroundImage={`linear-gradient(180deg, ${player.currentAlbum().accent} 0%, ${darken(player.currentAlbum().accent, 0.65)} 100%)`}
-      />
+      {/* Backdrop: a CSS-owned base with the album's accent gradient over it */}
+      <gridlayout class="np-backdrop">
+        <gridlayout
+          class="np-gradient"
+          backgroundImage={`linear-gradient(180deg, ${player.currentAlbum().accent} 0%, ${darken(player.currentAlbum().accent, 0.65)} 100%)`}
+        />
+      </gridlayout>
 
       <scrollview>
-        <stacklayout class="px-6 pb-10">
+        <stacklayout class="np-body">
           {/* Drag handle / close */}
-          <gridlayout
-            class="pt-3 pb-3"
-            horizontalAlignment="center"
-            on:tap={props.close}
-          >
-            <gridlayout
-              width="40"
-              height="5"
-              borderRadius="3"
-              backgroundColor="#ffffff"
-              opacity="0.4"
-            />
+          <gridlayout class="np-handle-row" on:tap={props.close}>
+            <gridlayout class="np-handle" />
           </gridlayout>
 
           {/* Artwork */}
-          <gridlayout horizontalAlignment="center" class="pt-6">
+          <gridlayout class="np-art-wrap">
             <imagecacheit
+              class="np-art"
               src={player.currentAlbum().artwork}
-              width="320"
-              height="320"
               stretch="aspectFill"
-              borderRadius="14"
               sharedTransitionTag="albumArt"
             />
           </gridlayout>
 
-          {/* Title block */}
-          <gridlayout columns="*, auto" rows="auto" class="pt-7">
-            <stacklayout col={0}>
+          {/* Title row */}
+          <gridlayout class="np-meta" columns="*, auto, auto" rows="auto">
+            <stacklayout col={0} class="np-titles" verticalAlignment="center">
               <label
+                class="np-title"
                 text={player.currentTrack().title}
-                class="on-image text-2xl font-bold text-white"
                 maxLines="1"
                 textWrap="false"
               />
               <label
+                class="np-artist"
                 text={player.currentAlbum().artist}
-                class="on-image text-lg text-white"
-                opacity="0.75"
                 maxLines="1"
                 textWrap="false"
               />
             </stacklayout>
-            <image
+            <gridlayout
+              class="np-pill"
               col={1}
-              src="sys://ellipsis.circle.fill"
-              width="32"
-              height="32"
-              tintColor="#ffffff"
-              opacity="0.7"
-              verticalAlignment="center"
+              on:tap={() => setIsStarred((s) => !s)}
+            >
+              <image
+                class="np-pill-icon"
+                src={isStarred() ? "sys://star.fill" : "sys://star"}
+                stretch="aspectFit"
+                tintColor="#ffffff"
+              />
+            </gridlayout>
+            <gridlayout
+              class="np-pill"
+              col={2}
               menu={ellipsisMenu}
               on:selected={(args: any) =>
                 console.log("menu selected:", args?.data?.option?.name)
               }
-            />
+            >
+              <image
+                class="np-pill-icon"
+                src="sys://ellipsis"
+                stretch="aspectFit"
+                tintColor="#ffffff"
+              />
+            </gridlayout>
           </gridlayout>
 
           {/* Progress */}
-          <gridlayout rows="auto, auto" class="pt-5">
-            <gridlayout
-              row={0}
-              height="4"
-              borderRadius="2"
-              opacity="0.25"
-              class="bg-white"
-            >
+          <gridlayout class="np-progress" rows="auto, auto">
+            <gridlayout class="np-track" row={0}>
               <gridlayout
-                horizontalAlignment="left"
+                class="np-track-fill"
                 width={Math.round(player.progress() * 100) + "%"}
-                class="bg-white"
-                height="4"
-                borderRadius="2"
               />
             </gridlayout>
-            <gridlayout row={1} columns="*, auto" class="pt-2">
+            <gridlayout class="np-times" row={1} columns="*, auto">
               <label
+                class="np-time"
                 col={0}
-                text="1:23"
-                class="on-image text-xs text-white"
-                opacity="0.6"
+                text={formatTime(
+                  durationSeconds(player.currentTrack().duration) *
+                    player.progress(),
+                )}
               />
               <label
+                class="np-time"
                 col={1}
-                text="-2:45"
-                class="on-image text-xs text-white"
-                opacity="0.6"
+                text={
+                  "-" +
+                  formatTime(
+                    durationSeconds(player.currentTrack().duration) *
+                      (1 - player.progress()),
+                  )
+                }
               />
             </gridlayout>
           </gridlayout>
 
           {/* Playback controls */}
-          <gridlayout
-            columns="*, *, *"
-            rows="auto"
-            class="pt-7"
-            horizontalAlignment="center"
-          >
+          <gridlayout class="np-controls" columns="*, *, *" rows="auto">
             <image
+              class="np-skip"
               col={0}
               src="sys://backward.fill"
-              width="36"
-              height="36"
-              tintColor="#ffffff"
               stretch="aspectFit"
+              tintColor="#ffffff"
               on:tap={() => player.skipBackward()}
             />
             <image
+              class="np-play"
               col={1}
               src={player.isPlaying() ? "sys://pause.fill" : "sys://play.fill"}
-              width="56"
-              height="56"
-              tintColor="#ffffff"
               stretch="aspectFit"
-              class="px-10"
+              tintColor="#ffffff"
               on:tap={() => player.togglePlay()}
             />
             <image
+              class="np-skip"
               col={2}
               src="sys://forward.fill"
-              width="36"
-              height="36"
-              tintColor="#ffffff"
               stretch="aspectFit"
+              tintColor="#ffffff"
               on:tap={() => player.skipForward()}
             />
           </gridlayout>
 
           {/* Volume */}
-          <gridlayout columns="auto, *, auto" rows="auto" class="pt-8">
+          <gridlayout class="np-volume" columns="auto, *, auto" rows="auto">
             <image
+              class="np-vol-icon np-vol-min"
               col={0}
               src="sys://speaker.fill"
-              width="16"
-              height="16"
               tintColor="#ffffff"
-              opacity="0.6"
-              verticalAlignment="center"
             />
-            <gridlayout
-              col={1}
-              height="4"
-              borderRadius="2"
-              backgroundColor="#ffffff"
-              opacity="0.25"
-              class="mx-3"
-              verticalAlignment="center"
-            >
-              <gridlayout
-                horizontalAlignment="left"
-                width="55%"
-                height="4"
-                borderRadius="2"
-                backgroundColor="#ffffff"
-              />
+            <gridlayout class="np-vol-track" col={1}>
+              <gridlayout class="np-vol-fill" />
             </gridlayout>
             <image
+              class="np-vol-icon np-vol-max"
               col={2}
               src="sys://speaker.wave.3.fill"
-              width="20"
-              height="20"
               tintColor="#ffffff"
-              opacity="0.6"
-              verticalAlignment="center"
+            />
+          </gridlayout>
+
+          {/* Actions: lyrics, output device, queue */}
+          <gridlayout class="np-actions" columns="*, *, *" rows="auto">
+            <image
+              class="np-action"
+              col={0}
+              src="sys://quote.bubble"
+              stretch="aspectFit"
+              tintColor="#ffffff"
+            />
+            <image
+              class="np-action np-action-active"
+              col={1}
+              src="sys://airpods"
+              stretch="aspectFit"
+              tintColor="#ffffff"
+            />
+            <image
+              class="np-action"
+              col={2}
+              src="sys://list.bullet"
+              stretch="aspectFit"
+              tintColor="#ffffff"
             />
           </gridlayout>
         </stacklayout>

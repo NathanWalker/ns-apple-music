@@ -12,6 +12,9 @@ registerElement("imagecacheit", ImageCacheIt);
 
 if (__DEV__) {
   startSimDeckInspector({ port: 4310 });
+  // Keep the "HMR update applied" toast below the content instead of over the
+  // nav title — matters for the demo/ recordings.
+  (globalThis as any).__NS_HMR_OVERLAY_POSITION__ = "bottom";
 }
 
 // startSolidApp boots the app (Application.run + render) and wires HMR
